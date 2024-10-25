@@ -6,19 +6,22 @@
  */
 import javascript
 
-// Predicate to identify if a function call is to "pressActionKey"
-predicate isPressActionKeyCall(CallExpression call) {
-  exists(Function f | f.getName() = "pressActionKey" and call.getCallee() = f)
+// Predicate to identify if an expression is a call to "pressActionKey"
+predicate isPressActionKeyCall(Invocation i) {
+  i.getCallee().getName() = "pressActionKey"
 }
 
 // Predicate to identify if a function is a test
 predicate isTest(Function f) {
   f.getName().matches("%test%") or
   f.getName().matches("test%") or
-  exists(CallExpression call | call.getCallee().getName() = "describe" and call.getEnclosingFunction() = f)
+  exists(Invocation i |
+    i.getCallee().getName() = "describe" and
+    i.getEnclosingFunction() = f
+  )
 }
 
 // Main query to find tests calling "pressActionKey"
-from Function test, CallExpression call
-where isTest(test) and isPressActionKeyCall(call) and call.getEnclosingFunction() = test
-select call, "This test calls the 'pressActionKey' function."
+from Function test, Invocation i
+where isTest(test) and isPressActionKeyCall(i) and i.getEnclosingFunction() = test
+select i, "This test calls the 'pressActionKey' function."
