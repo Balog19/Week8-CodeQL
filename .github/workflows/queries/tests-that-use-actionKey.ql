@@ -6,12 +6,11 @@
  */
 import javascript
 
-// Predicate to identify if an expression is a call to "pressActionKey"
 predicate isPressActionKeyCall(CallExpr call) {
   exists(Expr callee |
     callee = call.getCallee() and
     callee instanceof Identifier and
-    callee.getCalleeName() = "pressActionKey"
+    callee.getName() = "pressActionKey"
   )
 }
 
