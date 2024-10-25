@@ -11,18 +11,16 @@ predicate isPressActionKeyCall(CallExpr call) {
   exists(Expr callee |
     callee = call.getCallee() and
     callee instanceof Identifier and
-    callee.getName() = "pressActionKey"
+    callee.getCalleeName() = "pressActionKey"
   )
 }
 
-// Predicate to identify if a function is a test
-predicate isTest(Function f) {
-  f.getName().matches("%test%") or
-  f.getName().matches("test%") or
-  exists(CallExpr call |
-    call.getCallee() instanceof Identifier and
-    call.getCallee().getName() = "describe" and
-    call.getEnclosingFunction() = f
+predicate isTest(Function test) {
+  exists(CallExpr describe, CallExpr it |
+    describe.getCalleeName() = "describe" and
+    it.getCalleeName() = "it" and
+    it.getParent*() = describe and
+    test = it.getArgument(1)
   )
 }
 
